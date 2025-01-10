@@ -27,7 +27,8 @@ export default function News() {
   const filteredArticles = articles.filter(article => {
     const title = article.title || ''; // Default to empty string if null
     const description = article.description || ''; // Default to empty string if null
-    return title.toLowerCase().includes(searchQuery.toLowerCase()) || description.toLowerCase().includes(searchQuery.toLowerCase());
+    // Exclude articles with unwanted text
+    return !title.includes('[Removed]') && !description.includes('[Removed]');
   });
 
   return (
