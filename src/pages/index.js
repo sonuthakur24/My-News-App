@@ -1,6 +1,5 @@
 // pages/index.js
 import Head from 'next/head';
-import Layout from '../components/Layout';
 
 export default function Home() {
   const featuredArticles = [
@@ -18,7 +17,9 @@ export default function Home() {
         <title>Social Engineering News Aggregator</title>
         <meta name="description" content="Stay informed about the latest social engineering news and trends." />
       </Head>
-      
+      <header className="bg-blue-600 text-white p-4 flex justify-between items-center">
+        {/* Logo removed */}
+      </header>
       <main className="p-4 flex">
         <section className="flex-1">
           <h2 className="text-xl font-bold mb-4 text-black">Featured News</h2>
