@@ -42,7 +42,7 @@ export default function Contact() {
         `}</style>
       </Head>
       <div className="hero-bg flex items-center justify-center text-white">
-        <h1 className="text-5xl font-bold bg-black bg-opacity-50 p-4 rounded-lg">Welcome to Ruttonsha</h1>
+        <h1 className="text-5xl font-bold bg-black bg-opacity-50 p-4 rounded-lg">Welcome to SENA</h1>
       </div>
       <div className="container mx-auto p-6">
         <div className="bg-white rounded-lg shadow-lg p-8">

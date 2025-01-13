@@ -1,4 +1,3 @@
-// components/Layout.js
 import Link from 'next/link';
 
 export default function Layout({ children }) {
@@ -6,8 +5,8 @@ export default function Layout({ children }) {
     <div>
       <header className="bg-blue-600 text-white p-4 flex justify-between items-center">
         <div className="text-2xl">Logo</div>
-        <nav>
-          <ul className="flex space-x-4">
+        <nav className="flex-1">
+          <ul className="flex justify-center space-x-5">
             <li>
               <Link href="/">
                 Home
@@ -28,12 +27,10 @@ export default function Layout({ children }) {
                 Contact
               </Link>
             </li>
-            
           </ul>
         </nav>
       </header>
       <main>{children}</main>
-      
     </div>
   );
 }
