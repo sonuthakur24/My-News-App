@@ -1,30 +1,29 @@
 import Head from 'next/head';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faExclamationTriangle, faShieldAlt, faServer, faNetworkWired } from '@fortawesome/free-solid-svg-icons';
+import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import Quiz from '../../components/Quiz'; // Assuming you'll create this component
+import Quiz from '../../components/Quiz';
 
 export default function DosDdos() {
-  const [images, setImages] = useState([]);
+  const [image, setImage] = useState('');
 
   useEffect(() => {
-    async function fetchImages() {
+    async function fetchImage() {
       try {
         const response = await axios.get('https://api.unsplash.com/photos/random', {
           params: {
             query: 'Cybersecurity',
             client_id: 'zjKsVTPyuTxCeTiVgayeg6igk_IvglEtrRwhY2tsvHY', // Replace with your Unsplash API key
-            count: 5, // Fetch 5 images
           },
         });
-        setImages(response.data.map(img => img.urls.regular));
+        setImage(response.data.urls.regular);
       } catch (error) {
-        console.error('Error fetching images:', error);
+        console.error('Error fetching image:', error);
       }
     }
 
-    fetchImages();
+    fetchImage();
   }, []);
 
   return (
@@ -40,9 +39,9 @@ export default function DosDdos() {
           DoS and DDoS Attacks
         </h1>
 
-        {images[0] && (
+        {image && (
           <div className="mb-8">
-            <img src={images[0]} alt="Cybersecurity" className="w-full h-64 object-cover rounded-lg shadow-lg" />
+            <img src={image} alt="Cybersecurity" className="w-full h-64 object-cover rounded-lg shadow-lg" />
           </div>
         )}
 
@@ -67,8 +66,6 @@ export default function DosDdos() {
           </ul>
         </section>
 
-        
-
         <section className="bg-white rounded-lg shadow-lg p-8 mb-8">
           <h2 className="text-2xl font-semibold mb-4 text-black">Impact of DDoS Attacks on Websites</h2>
           <p className="text-gray-700 leading-relaxed">
@@ -85,8 +82,6 @@ export default function DosDdos() {
             <li>Strained IT Resources</li>
           </ul>
         </section>
-
-        
 
         <section className="bg-white rounded-lg shadow-lg p-8 mb-8">
           <h2 className="text-2xl font-semibold mb-4 text-black">Signs Your Website is Under a DDoS Attack</h2>
@@ -106,72 +101,37 @@ export default function DosDdos() {
           </ul>
         </section>
 
-        
-
         <section className="bg-white rounded-lg shadow-lg p-8 mb-8">
           <h2 className="text-2xl font-semibold mb-4 text-black">How to Mitigate and Resolve DDoS Attacks</h2>
           <p className="text-gray-700 leading-relaxed">
             Dealing with DDoS (Distributed Denial of Service) attacks requires a strategic approach, from prevention to response. 
             As we've seen, DDoS attacks can cripple a website by overwhelming its server with malicious traffic, leading to downtime, 
             financial loss, and reputational damage. However, knowing how to mitigate and resolve these attacks can significantly 
-            reduce their impact. Let's see some prevention techniques, detection methods, immediate response actions, and long-term 
+            reduce their impact. Let’s see some prevention techniques, detection methods, immediate response actions, and long-term 
             solutions for mitigating and resolving DDoS attacks.
-          </p>
-        </section>
-
-        
-
-        <section className="bg-white rounded-lg shadow-lg p-8 mb-8">
-          <h2 className="text-2xl font-semibold mb-4 text-black">Regular Updates and Infrastructure Scaling</h2>
-          <p className="text-gray-700 leading-relaxed">
-            Regularly updating your website’s software, server infrastructure, and network systems is another critical long-term 
-            strategy to defend against DDoS attack on website. Outdated software or hardware can create vulnerabilities that attackers 
-            can exploit to gain unauthorized access or disrupt your website. This includes updating your content management system (CMS), 
-            plugins, firewalls, and operating systems with the latest security patches to safeguard against known exploits.
-          </p>
-          <p className="text-gray-700 leading-relaxed mt-4">
-            Additionally, scaling your infrastructure to handle more traffic and investing in more robust hardware can help ensure that 
-            your website remains functional even during a DDoS attack. Load balancing, for example, can distribute incoming traffic across 
-            multiple servers, preventing any single server from being overwhelmed. With a well-optimized and up-to-date infrastructure, 
-            your website will be better equipped to handle high volumes of traffic, whether legitimate or malicious.
-          </p>
-        </section>
-
-        <section className="bg-white rounded-lg shadow-lg p-8 mb-8">
-          <h2 className="text-2xl font-semibold mb-4 text-black">Educate and Train Your Team</h2>
-          <p className="text-gray-700 leading-relaxed">
-            A well-prepared team is your first line of defense against DDoS attack on website. Regular cybersecurity training is essential 
-            for ensuring that your team can recognize the early signs of an attack, use DDoS detection tools effectively, and respond swiftly 
-            to mitigate the threat. A solid understanding of DDoS attack methods, detection techniques, and mitigation processes will enable 
-            your team to act efficiently and with confidence.
-          </p>
-          <p className="text-gray-700 leading-relaxed mt-4">
-            Training should cover topics such as traffic monitoring, the use of security tools, communication during an attack, and the steps 
-            required to activate DDoS mitigation services. A team that is continuously educated about the latest DDoS threats and defense mechanisms 
-            can reduce response times and help ensure your website's security is maintained. In addition, fostering a culture of security awareness 
-            throughout your organization will empower every team member to contribute to a safer web environment.
           </p>
         </section>
 
         <section className="bg-white rounded-lg shadow-lg p-8 mb-8">
           <h2 className="text-2xl font-semibold mb-4 text-black">Conclusion</h2>
           <p className="text-gray-700 leading-relaxed">
-            In conclusion, DDoS attack on website pose a significant threat to websites, often leading to downtime, financial loss, and reputational 
-            damage. Understanding what DDoS attacks are, recognizing the signs of an ongoing attack, and knowing their potential impact on your site 
-            is crucial for effective mitigation. By implementing proactive measures such as using CDNs, firewalls, and DDoS protection services, you 
-            can significantly reduce the risk of these attacks.
+            In conclusion, DDoS attack on website pose a significant threat to websites, often leading to downtime, financial loss, 
+            and reputational damage. Understanding what DDoS attacks are, recognizing the signs of an ongoing attack, and knowing 
+            their potential impact on your site is crucial for effective mitigation. By implementing proactive measures such as using 
+            CDNs, firewalls, and DDoS protection services, you can significantly reduce the risk of these attacks.
           </p>
           <p className="text-gray-700 leading-relaxed mt-4">
-            Furthermore, real-time detection tools and a well-prepared response plan are key to quickly mitigating attacks when they occur. Long-term 
-            strategies, including AI-based solutions and regular infrastructure updates, strengthen your site’s defense against future threats. 
-            Ultimately, a combination of prevention, timely response, and ongoing vigilance ensures that your website remains resilient against DDoS 
-            attack on website, minimizing potential disruptions and maintaining a smooth user experience. Stay proactive, stay protected.
+            Furthermore, real-time detection tools and a well-prepared response plan are key to quickly mitigating attacks when they 
+            occur. Long-term strategies, including AI-based solutions and regular infrastructure updates, strengthen your site’s defense 
+            against future threats. Ultimately, a combination of prevention, timely response, and ongoing vigilance ensures that your 
+            website remains resilient against DDoS attack on website, minimizing potential disruptions and maintaining a smooth user 
+            experience. Stay proactive, stay protected.
           </p>
         </section>
 
         <section className="bg-white rounded-lg shadow-lg p-8">
           <h2 className="text-2xl font-semibold mb-4 text-black">Test Your Knowledge</h2>
-          <Quiz topic="dos-ddos" /> {/* Pass topic information to your quiz component */}
+          <Quiz topic="dos_ddos" /> {/* Pass topic information to your quiz component */}
         </section>
       </main>
     </div>
