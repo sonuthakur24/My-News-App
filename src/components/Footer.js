@@ -4,9 +4,12 @@ export default function Footer() {
   return (
     <footer className="bg-blue-800 text-white py-8 px-4">
       <div className="container mx-auto flex flex-col md:flex-row justify-between items-center">
-        <div className="mb-4 md:mb-0">
-          <h2 className="text-lg font-bold">Social Engineering News Aggregator</h2>
-          <p className="text-sm">&copy; {new Date().getFullYear()} All rights reserved.</p>
+        <div className="mb-4 md:mb-0 flex items-center space-x-4">
+          <img src="/logo1.jpg" alt="Logo" className="h-10" /> {/* Replace with your logo path */}
+          <div>
+            <h2 className="text-lg font-bold">Social Engineering News Aggregator</h2>
+            <p className="text-sm">&copy; {new Date().getFullYear()} All rights reserved.</p>
+          </div>
         </div>
         <ul className="flex space-x-4 mb-4 md:mb-0">
           <li>

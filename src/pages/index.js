@@ -85,26 +85,29 @@ export default function Home() {
         <div className="mt-8">
           <h2 className="text-2xl font-bold mb-4 text-black">Top Headlines</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {headlines.slice(0, 3).map((article, index) => (
-              <div key={index} className="bg-white rounded-lg shadow-md overflow-hidden">
-                <img
-                  src={article.urlToImage || '/images/placeholder.png'}
-                  alt={article.title}
-                  className="w-full h-48 object-cover"
-                />
-                <div className="p-4">
-                  <h3 className="text-lg font-semibold mb-2">
-                    <a href={article.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                      {article.title}
+            {headlines
+              .filter(article => article.title && article.urlToImage) // Filter out articles without a title or image
+              .slice(0, 3)
+              .map((article, index) => (
+                <div key={index} className="bg-white rounded-lg shadow-md overflow-hidden">
+                  <img
+                    src={article.urlToImage}
+                    alt={article.title}
+                    className="w-full h-48 object-cover"
+                  />
+                  <div className="p-4">
+                    <h3 className="text-lg font-semibold mb-2">
+                      <a href={article.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                        {article.title}
+                      </a>
+                    </h3>
+                    <p className="text-gray-600">{article.description}</p>
+                    <a href={article.url} target="_blank" rel="noopener noreferrer" className="inline-block mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                      Read More
                     </a>
-                  </h3>
-                  <p className="text-gray-600">{article.description}</p>
-                  <a href={article.url} target="_blank" rel="noopener noreferrer" className="inline-block mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-                    Read More
-                  </a>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
           </div>
         </div>
       </main>

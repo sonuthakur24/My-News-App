@@ -24,7 +24,7 @@ export default function Layout({ children }) {
       <nav className="bg-blue-800 p-4 relative z-10">
         <div className="container mx-auto flex justify-between items-center">
           <div className="text-white text-lg font-bold">
-            <img src="/logo.png" alt="Logo" className="h-8" /> {/* Replace with your logo path */}
+            <img src="logo1.jpg" alt="Logo" className="h-10" /> {/* Replace with your logo path */}
           </div>
           <ul className="flex space-x-4 mx-auto">
             <li>
