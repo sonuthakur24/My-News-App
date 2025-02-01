@@ -1,47 +1,52 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Footer from './Footer'; // Import the Footer component
+import { useRouter } from 'next/router';
+import Footer from './Footer';
 
 export default function Layout({ children }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const dropdownRef = useRef(null);
-
-  const handleClickOutside = (event) => {
-    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-      setIsDropdownOpen(false);
-    }
-  };
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+    // Check if the user is logged in by checking the presence of a token
+    const token = localStorage.getItem('token');
+    if (token) {
+      setIsLoggedIn(true);
+    }
   }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setIsLoggedIn(false);
+    router.push('/');
+  };
+
+  const isActive = (path) => (router.pathname === path ? 'underline' : 'text-white');
 
   return (
     <div>
       <nav className="bg-blue-800 p-4 relative z-10">
         <div className="container mx-auto flex justify-between items-center">
-          <div className="text-white text-lg font-bold">
-            <img src="logo1.jpg" alt="Logo" className="h-10" /> {/* Replace with your logo path */}
+          <div className="flex items-center space-x-4">
+            <img src="/logo1.jpg" alt="Logo" className="h-10 w-10 rounded-full shadow-lg transform transition-transform duration-300 hover:scale-110" />
+            <span className="text-white text-lg font-bold transform transition-transform duration-300 hover:scale-110 hover:text-gray-300">
+              Social Engineering News Aggregator
+            </span>
           </div>
           <ul className="flex space-x-4 mx-auto">
             <li>
-              <Link href="/" className="text-white hover:text-gray-300">
+              <Link href="/" className={`${isActive('/')} hover:text-gray-300`}>
                 Home
               </Link>
             </li>
             <li>
-              <Link href="/news" className="text-white hover:text-gray-300">
+              <Link href="/news" className={`${isActive('/news')} hover:text-gray-300`}>
                 News
               </Link>
             </li>
-            <li className="relative" ref={dropdownRef}>
-              <button
-                className="text-white hover:text-gray-300"
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              >
+            <li className="relative">
+              <button className={`${isActive('/learn')} hover:text-gray-300`} onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
                 Learn
               </button>
               {isDropdownOpen && (
@@ -75,20 +80,49 @@ export default function Layout({ children }) {
               )}
             </li>
             <li>
-              <Link href="/about" className="text-white hover:text-gray-300">
+              <Link href="/about" className={`${isActive('/about')} hover:text-gray-300`}>
                 About
               </Link>
             </li>
             <li>
-              <Link href="/contact" className="text-white hover:text-gray-300">
+              <Link href="/contact" className={`${isActive('/contact')} hover:text-gray-300`}>
                 Contact
               </Link>
             </li>
           </ul>
+          <ul className="flex space-x-4">
+            {isLoggedIn ? (
+              <>
+                <li>
+                  <Link href="/profile" className={`${isActive('/profile')} hover:text-gray-300`}>
+                    Profile
+                  </Link>
+                </li>
+                <li>
+                  <button onClick={handleLogout} className="text-white hover:text-gray-300">
+                    Logout
+                  </button>
+                </li>
+              </>
+            ) : (
+              <>
+                <li>
+                  <Link href="/login" className={`${isActive('/login')} hover:text-gray-300`}>
+                    Login
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/signup" className={`${isActive('/signup')} hover:text-gray-300`}>
+                    Sign Up
+                  </Link>
+                </li>
+              </>
+            )}
+          </ul>
         </div>
       </nav>
       <main>{children}</main>
-      <Footer /> {/* Add the Footer component */}
+      <Footer />
     </div>
   );
 }
