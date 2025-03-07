@@ -18,6 +18,8 @@ export default function News() {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
 
+  const defaultImageUrl = 'https://via.placeholder.com/150'; // Default image URL
+
   useEffect(() => {
     async function fetchArticles() {
       try {
@@ -31,6 +33,7 @@ export default function News() {
           ...article,
           category: categorizeArticle(article),
           tags: generateTags(article),
+          urlToImage: article.urlToImage || defaultImageUrl, // Use default image if urlToImage is not available
         }));
         setArticles(articlesWithCategories);
         setCategories([...new Set(articlesWithCategories.map(article => article.category))]);
@@ -182,13 +185,11 @@ export default function News() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredArticles.map((article, index) => (
             <div key={index} className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
-              {article.urlToImage && (
-                <img
-                  src={article.urlToImage}
-                  alt={article.title}
-                  className="w-full h-48 object-cover rounded-lg"
-                />
-              )}
+              <img
+                src={article.urlToImage}
+                alt={article.title}
+                className="w-full h-48 object-cover rounded-lg"
+              />
               <h3 className="text-xl font-semibold mt-4 text-black">
                 <a href={article.url} target="_blank" rel="noopener noreferrer" className="hover:text-blue-600">
                   {article.title}

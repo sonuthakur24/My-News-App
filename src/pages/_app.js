@@ -1,11 +1,17 @@
-// pages/_app.js
+// filepath: /d:/sonu new/project/my-app/src/pages/_app.js
+import React from 'react';
+import { SessionProvider } from "next-auth/react";
 import '@/styles/globals.css';
 import Layout from '../components/Layout';
 
-export default function App({ Component, pageProps }) {
+function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   return (
-    <Layout>
-      <Component {...pageProps} />
-    </Layout>
+    <SessionProvider session={session}>
+      <Layout>
+        <Component {...pageProps} />
+      </Layout>
+    </SessionProvider>
   );
 }
+
+export default MyApp;

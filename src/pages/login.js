@@ -5,6 +5,7 @@ import Head from 'next/head';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import GoogleLoginButton from '../components/GoogleLoginButton';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -99,6 +100,9 @@ export default function Login() {
             Login
           </button>
         </form>
+        <div className="mt-4">
+          <GoogleLoginButton />
+        </div>
         <p className="mt-4 text-center text-gray-700">
           Don't have an account?{' '}
           <Link href="/signup" legacyBehavior>

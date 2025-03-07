@@ -1,28 +1,50 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import { useSession, signOut } from 'next-auth/react';
 import Footer from './Footer';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUserCircle } from '@fortawesome/free-solid-svg-icons';
 
 export default function Layout({ children }) {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLearnDropdownOpen, setIsLearnDropdownOpen] = useState(false);
+  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const router = useRouter();
-
-  useEffect(() => {
-    // Check if the user is logged in by checking the presence of a token
-    const token = localStorage.getItem('token');
-    if (token) {
-      setIsLoggedIn(true);
-    }
-  }, []);
+  const { data: session } = useSession();
+  const learnDropdownRef = useRef(null);
+  const profileDropdownRef = useRef(null);
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    setIsLoggedIn(false);
-    router.push('/');
+    signOut({ callbackUrl: '/' });
   };
 
   const isActive = (path) => (router.pathname === path ? 'underline' : 'text-white');
+
+  const handleClickOutside = (event) => {
+    if (learnDropdownRef.current && !learnDropdownRef.current.contains(event.target)) {
+      setIsLearnDropdownOpen(false);
+    }
+    if (profileDropdownRef.current && !profileDropdownRef.current.contains(event.target)) {
+      setIsProfileDropdownOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  const toggleLearnDropdown = () => {
+    setIsLearnDropdownOpen(!isLearnDropdownOpen);
+    setIsProfileDropdownOpen(false);
+  };
+
+  const toggleProfileDropdown = () => {
+    setIsProfileDropdownOpen(!isProfileDropdownOpen);
+    setIsLearnDropdownOpen(false);
+  };
 
   return (
     <div>
@@ -45,11 +67,11 @@ export default function Layout({ children }) {
                 News
               </Link>
             </li>
-            <li className="relative">
-              <button className={`${isActive('/learn')} hover:text-gray-300`} onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
+            <li className="relative" ref={learnDropdownRef}>
+              <button className={`${isActive('/learn')} hover:text-gray-300`} onClick={toggleLearnDropdown}>
                 Learn
               </button>
-              {isDropdownOpen && (
+              {isLearnDropdownOpen && (
                 <ul className="absolute left-0 mt-2 w-48 bg-blue-500 text-white rounded shadow-lg z-20">
                   <li className="border-b border-gray-200">
                     <Link href="/learn/dos-ddos" className="block px-4 py-2 hover:bg-blue-400">
@@ -91,19 +113,26 @@ export default function Layout({ children }) {
             </li>
           </ul>
           <ul className="flex space-x-4">
-            {isLoggedIn ? (
-              <>
-                <li>
-                  <Link href="/profile" className={`${isActive('/profile')} hover:text-gray-300`}>
-                    Profile
-                  </Link>
-                </li>
-                <li>
-                  <button onClick={handleLogout} className="text-white hover:text-gray-300">
-                    Logout
-                  </button>
-                </li>
-              </>
+            {session ? (
+              <div className="relative" ref={profileDropdownRef}>
+                <button className="flex items-center text-white focus:outline-none" onClick={toggleProfileDropdown}>
+                  <FontAwesomeIcon icon={faUserCircle} className="text-3xl" />
+                  <span className="ml-2">{session.user.name}</span>
+                </button>
+                {isProfileDropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2">
+                    <Link href="/profile" legacyBehavior>
+                      <a className="block px-4 py-2 text-gray-800 hover:bg-gray-200">Profile</a>
+                    </Link>
+                    <button
+                      onClick={handleLogout}
+                      className="block w-full text-left px-4 py-2 text-gray-800 hover:bg-gray-200"
+                    >
+                      Sign out
+                    </button>
+                  </div>
+                )}
+              </div>
             ) : (
               <>
                 <li>
