@@ -51,7 +51,7 @@ export default function Layout({ children }) {
       <nav className="bg-blue-800 p-4 relative z-10">
         <div className="container mx-auto flex justify-between items-center">
           <div className="flex items-center space-x-4">
-            <img src="/logo1.jpg" alt="Logo" className="h-10 w-10 rounded-full shadow-lg transform transition-transform duration-300 hover:scale-110" />
+            <img src="/logo.jpg" alt="Logo" className="h-10 w-10 rounded-full shadow-lg transform transition-transform duration-300 hover:scale-110" />
             <span className="text-white text-lg font-bold transform transition-transform duration-300 hover:scale-110 hover:text-gray-300">
               Social Engineering News Aggregator
             </span>
