@@ -1,15 +1,33 @@
-// pages/contact.js
+// filepath: /d:/sonu new/project/my-app/src/pages/contact.js
 import Head from 'next/head';
 import { useState } from 'react';
+import axios from 'axios';
 
 export default function Contact() {
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessages, setErrorMessages] = useState([]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission logic here
-    // For example, send data to an API endpoint
+    const formData = new FormData(e.target);
+    const data = {
+      name: formData.get('name'),
+      email: formData.get('email'),
+      contact: formData.get('contact'),
+      city: formData.get('city'),
+      message: formData.get('message'),
+    };
+
+    try {
+      const response = await axios.post('/api/contact', data);
+      setSuccessMessage(response.data.message);
+      setErrorMessages([]);
+      e.target.reset();
+    } catch (error) {
+      console.error('Error submitting contact form:', error);
+      setSuccessMessage('');
+      setErrorMessages([error.response?.data?.error || 'Failed to submit the form. Please try again.']);
+    }
   };
 
   return (
@@ -73,13 +91,13 @@ export default function Contact() {
             </div>
             <div>
               <form className="space-y-4" onSubmit={handleSubmit}>
-                <div className="success message">{successMessage}</div>
-                <div className="error message">{errorMessages.join(', ')}</div>
-                <input type="text" name="name" placeholder="Name" className="w-full p-3 border rounded-lg text-black" />
-                <input type="email" name="email" placeholder="Email" className="w-full p-3 border rounded-lg text-black" />
-                <input type="text" name="contact" placeholder="Contact Number" className="w-full p-3 border rounded-lg text-black" />
-                <input type="text" name="city" placeholder="City" className="w-full p-3 border rounded-lg text-black" />
-                <textarea name="message" placeholder="Message" rows="6" className="w-full p-3 border rounded-lg text-black"></textarea>
+                {successMessage && <div className="success message">{successMessage}</div>}
+                {errorMessages.length > 0 && <div className="error message">{errorMessages.join(', ')}</div>}
+                <input type="text" name="name" placeholder="Name" className="w-full p-3 border rounded-lg text-black" required />
+                <input type="email" name="email" placeholder="Email" className="w-full p-3 border rounded-lg text-black" required />
+                <input type="text" name="contact" placeholder="Contact Number" className="w-full p-3 border rounded-lg text-black" required />
+                <input type="text" name="city" placeholder="City" className="w-full p-3 border rounded-lg text-black" required />
+                <textarea name="message" placeholder="Message" rows="6" className="w-full p-3 border rounded-lg text-black" required></textarea>
                 <button type="submit" className="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700">Send</button>
               </form>
             </div>

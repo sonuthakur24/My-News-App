@@ -3,8 +3,10 @@ import Head from 'next/head';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { faThumbsUp, faShareAlt, faComment, faSearch, faFilter, faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
+import { useSession } from 'next-auth/react';
 
 export default function News() {
+  const { data: session } = useSession();
   const [articles, setArticles] = useState([]);
   const [filteredArticles, setFilteredArticles] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -13,7 +15,19 @@ export default function News() {
   const [comments, setComments] = useState({});
   const [shares, setShares] = useState({});
   const [notification, setNotification] = useState('');
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState([
+    'All Categories',
+    'Phishing',
+    'Ransomware',
+    'Data Breach',
+    'MITM Attacks',
+    'Social Engineering',
+    'Cybersecurity',
+    'Hacking',
+    'Malware',
+    'Privacy',
+    'Encryption'
+  ]);
   const [selectedCategory, setSelectedCategory] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -36,7 +50,7 @@ export default function News() {
           urlToImage: article.urlToImage || defaultImageUrl, // Use default image if urlToImage is not available
         }));
         setArticles(articlesWithCategories);
-        setCategories([...new Set(articlesWithCategories.map(article => article.category))]);
+        setCategories([...new Set([...categories, ...articlesWithCategories.map(article => article.category)])]);
       } catch (error) {
         console.error('Error fetching articles:', error);
       }
@@ -59,7 +73,7 @@ export default function News() {
     }
 
     // Apply category filter
-    if (selectedCategory) {
+    if (selectedCategory && selectedCategory !== 'All Categories') {
       filtered = filtered.filter(article => article.category === selectedCategory);
     }
 
@@ -93,18 +107,54 @@ export default function News() {
     return potentialTags.filter(tag => text.includes(tag));
   };
 
-  const handleLike = (index) => {
-    setLikes(prevLikes => ({
-      ...prevLikes,
-      [index]: (prevLikes[index] || 0) + 1,
-    }));
+  const fetchInteractions = async (articleId) => {
+    try {
+      const response = await axios.get('/api/getInteractions', { params: { articleId } });
+      const { likes, comments } = response.data || {};
+      setLikes(prevLikes => ({ ...prevLikes, [articleId]: likes || [] }));
+      setComments(prevComments => ({ ...prevComments, [articleId]: comments || [] }));
+    } catch (error) {
+      console.error('Error fetching interactions:', error);
+    }
   };
 
-  const handleComment = (index, comment) => {
-    setComments(prevComments => ({
-      ...prevComments,
-      [index]: [...(prevComments[index] || []), comment],
-    }));
+  const handleLike = async (index, articleId) => {
+    if (!session) {
+      setNotification('You need to be logged in to like an article.');
+      setTimeout(() => setNotification(''), 3000);
+      return;
+    }
+
+    try {
+      console.log('Session data:', session); // Log session data
+      console.log('Article ID:', articleId); // Log article ID
+      console.log('User Email:', session.user.email); // Log user email
+      await axios.post('/api/like', { articleId, userId: session.user.email });
+      setLikes(prevLikes => ({
+        ...prevLikes,
+        [articleId]: (prevLikes[articleId] || []).concat(session.user.email),
+      }));
+    } catch (error) {
+      console.error('Error liking article:', error);
+    }
+  };
+
+  const handleComment = async (index, articleId, comment) => {
+    if (!session) {
+      setNotification('You need to be logged in to comment on an article.');
+      setTimeout(() => setNotification(''), 3000);
+      return;
+    }
+
+    try {
+      await axios.post('/api/comment', { articleId, userId: session.user.email, comment });
+      setComments(prevComments => ({
+        ...prevComments,
+        [articleId]: (prevComments[articleId] || []).concat({ userId: session.user.email, comment }),
+      }));
+    } catch (error) {
+      console.error('Error commenting on article:', error);
+    }
   };
 
   const handleShare = (index, url) => {
@@ -121,6 +171,12 @@ export default function News() {
       console.error('Failed to copy: ', err);
     });
   };
+
+  useEffect(() => {
+    articles.forEach(article => {
+      fetchInteractions(article.url);
+    });
+  }, [articles]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -154,7 +210,6 @@ export default function News() {
                 onChange={(e) => setSelectedCategory(e.target.value)}
                 className="p-2 border rounded-full text-black shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="">All Categories</option>
                 {categories.map(category => (
                   <option key={category} value={category}>{category}</option>
                 ))}
@@ -207,8 +262,8 @@ export default function News() {
                 ))}
               </div>
               <div className="flex items-center space-x-4 mt-4">
-                <button onClick={() => handleLike(index)} className="text-blue-600 hover:text-blue-800 flex items-center">
-                  <FontAwesomeIcon icon={faThumbsUp} className="mr-1" /> Like ({likes[index] || 0})
+                <button onClick={() => handleLike(index, article.url)} className="text-blue-600 hover:text-blue-800 flex items-center">
+                  <FontAwesomeIcon icon={faThumbsUp} className="mr-1" /> Like ({(likes[article.url] || []).length})
                 </button>
                 <button onClick={() => handleShare(index, article.url)} className="text-blue-600 hover:text-blue-800 flex items-center">
                   <FontAwesomeIcon icon={faShareAlt} className="mr-1" /> Share ({shares[index] || 0})
@@ -221,15 +276,15 @@ export default function News() {
                   className="p-2 border rounded-full w-full text-black shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
-                      handleComment(index, e.target.value);
+                      handleComment(index, article.url, e.target.value);
                       e.target.value = '';
                     }
                   }}
                 />
                 <div className="mt-2">
-                  {comments[index] && comments[index].map((comment, commentIndex) => (
+                  {(comments[article.url] || []).map((comment, commentIndex) => (
                     <p key={commentIndex} className="text-gray-600 flex items-center">
-                      <FontAwesomeIcon icon={faComment} className="mr-1" /> {comment}
+                      <FontAwesomeIcon icon={faComment} className="mr-1" /> {comment.comment}
                     </p>
                   ))}
                 </div>
