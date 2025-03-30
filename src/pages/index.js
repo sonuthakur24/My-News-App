@@ -3,6 +3,8 @@ import axios from 'axios';
 import Head from 'next/head';
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
+import { Typewriter } from 'react-simple-typewriter';
+import { SessionProvider } from "next-auth/react";
 
 export default function Home() {
   const [headlines, setHeadlines] = useState([]);
@@ -71,7 +73,15 @@ export default function Home() {
                     Welcome to
                   </h1>
                   <h2 className="text-white text-5xl font-bold mb-4 animate-slide-up">
-                    Social Engineering News Aggregator
+                    <Typewriter
+                      words={['Social Engineering News Aggregator']}
+                      loop={false}
+                      cursor
+                      cursorStyle='_'
+                      typeSpeed={70}
+                      deleteSpeed={50}
+                      delaySpeed={5000} // 5 seconds delay after typing completes
+                    />
                   </h2>
                   <h3 className="text-white text-3xl font-semibold animate-fade-in">
                     (SENA)

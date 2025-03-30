@@ -1,42 +1,47 @@
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
-import axios from 'axios';
+import { useSession } from 'next-auth/react';
+import Head from 'next/head';
 
 export default function Profile() {
-  const [user, setUser] = useState(null);
-  const router = useRouter();
+  const { data: session } = useSession();
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      router.push('/login');
-    } else {
-      // Fetch user data from the server using the token
-      axios.get('/api/profile', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then(response => {
-        setUser(response.data);
-      })
-      .catch(error => {
-        console.error('Error fetching user data:', error);
-        router.push('/login');
-      });
-    }
-  }, [router]);
-
-  if (!user) {
-    return <div>Loading...</div>;
+  if (!session) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <Head>
+          <title>Profile - Social Engineering News Aggregator</title>
+          <meta name="description" content="Profile page" />
+        </Head>
+        <div className="bg-white p-8 rounded-xl shadow-2xl w-96 backdrop-filter backdrop-blur-lg bg-opacity-30">
+          <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">You are not logged in</h2>
+        </div>
+      </div>
+    );
   }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h1 className="text-2xl font-bold mb-6">Profile</h1>
-        <p className="mb-4"><strong>Name:</strong> {user.username}</p>
-        <p className="mb-4"><strong>Email:</strong> {user.email}</p>
+      <Head>
+        <title>Profile - Social Engineering News Aggregator</title>
+        <meta name="description" content="Profile page" />
+      </Head>
+      <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md backdrop-filter backdrop-blur-lg bg-opacity-30">
+        <h2 className="text-4xl font-bold mb-6 text-center text-gray-800">Profile</h2>
+        <div className="flex flex-col items-center">
+          <img
+            src={session.user.image || '/default-profile.png'}
+            alt="Profile Picture"
+            className="w-24 h-24 rounded-full mb-4 shadow-lg"
+          />
+          <p className="text-gray-700 mb-2 text-lg">
+            <strong>Name:</strong> {session.user.name}
+          </p>
+          <p className="text-gray-700 mb-2 text-lg">
+            <strong>Email:</strong> {session.user.email}
+          </p>
+          <p className="text-gray-700 mb-2 text-lg">
+            <strong>Logged in as:</strong> {session.user.email}
+          </p>
+        </div>
       </div>
     </div>
   );

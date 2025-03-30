@@ -5,6 +5,7 @@ import Head from 'next/head';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import GoogleLoginButton from '../components/GoogleLoginButton';
 
 export default function Signup() {
   const [username, setUsername] = useState('');
@@ -113,6 +114,9 @@ export default function Signup() {
             Sign Up
           </button>
         </form>
+        <div className="mt-4">
+          <GoogleLoginButton />
+        </div>
         <p className="mt-4 text-center text-gray-700">
           Already have an account?{' '}
           <Link href="/login" legacyBehavior>
